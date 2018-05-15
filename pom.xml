@@ -6,7 +6,7 @@
 
     <groupId>co.pablob.security</groupId>
     <artifactId>kc</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <dependencies>
         <!--CDI-->

@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/pablobastidasv/kc_security.svg)](https://jitpack.io/#pablobastidasv/kc_security)
+
 # Keycloak security with Soteria (JEE 8)
 
 This project is a library to add security to servlets and JaxRS endpoints using the new security specification 
