@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 
 import static org.eclipse.microprofile.config.inject.ConfigProperty.UNCONFIGURED_VALUE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class AdapterConfigProducerTest {
 
@@ -35,13 +36,47 @@ public class AdapterConfigProducerTest {
     }
 
     @Test
-    public void whenConfigurationIsInFile_shouldGenerateCorrectAdapter() throws Exception {
+    public void whenConfigurationIsInFilePath_shouldGenerateCorrectAdapter() throws Exception {
         // given
         AdapterConfigProducer adapterConfigProducer = new AdapterConfigProducer();
 
         Path configFile = Paths.get(getClass().getResource("/keycloak.json").toURI());
 
         adapterConfigProducer.filePath = configFile.toRealPath().toString();
+        adapterConfigProducer.authServerUrl = UNCONFIGURED_VALUE;
+        adapterConfigProducer.clientId = UNCONFIGURED_VALUE;
+        adapterConfigProducer.realm = UNCONFIGURED_VALUE;
+
+        // when
+        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig();
+
+        // then
+        assertEquals(EXPECTED_SERVICE_URL, adapterConfig.getAuthServerUrl());
+        assertEquals(EXPECTED_CLIENT_ID, adapterConfig.getResource());
+        assertEquals(EXPECTED_REALM, adapterConfig.getRealm());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void whenConfigurationIsInFilePathAndDoesNotExist_shouldThrowException() throws Exception {
+        // given
+        AdapterConfigProducer adapterConfigProducer = new AdapterConfigProducer();
+
+        adapterConfigProducer.filePath = "/opt/test/notfolder/keycloak.json";
+        adapterConfigProducer.authServerUrl = UNCONFIGURED_VALUE;
+        adapterConfigProducer.clientId = UNCONFIGURED_VALUE;
+        adapterConfigProducer.realm = UNCONFIGURED_VALUE;
+
+        // when
+        adapterConfigProducer.produceAdapterConfig();
+        fail("Exception should be throws");
+    }
+
+    @Test
+    public void whenConfigurationIsInDefaultFile_shouldGenerateCorrectAdapter() throws Exception {
+        // given
+        AdapterConfigProducer adapterConfigProducer = new AdapterConfigProducer();
+
+        adapterConfigProducer.filePath = UNCONFIGURED_VALUE;
         adapterConfigProducer.authServerUrl = UNCONFIGURED_VALUE;
         adapterConfigProducer.clientId = UNCONFIGURED_VALUE;
         adapterConfigProducer.realm = UNCONFIGURED_VALUE;
