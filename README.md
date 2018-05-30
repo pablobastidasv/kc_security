@@ -33,7 +33,7 @@ Add the dependency in your pom as below.
 Keycloak security library could be configured through `keycloak.json` file or define main values as environment 
 variable.
 
-#### Through `keycloak.json` file
+#### With specified `keycloak.json` file
 
 **NOTE**: This approach supports full capabilities of `keycloak-servlet-filter-adapter`, the keycloak configuration 
 file is defined and used in total.
@@ -45,7 +45,12 @@ should be the full path to `keycloak` file location.
 security.kc.file-path=/opt/keycloak.json
 ``` 
 
-#### Through environment variables
+## With `keycloak.json` file in default location
+
+`keycloak.json` file could be also created in resource folder inside war file to be used as configuration in 
+case `security.kc.file-path` is not specified.
+
+#### With environment variables
 
 **NOTE**: This approach just define basic values to work in development environment or to test applications.  
 
