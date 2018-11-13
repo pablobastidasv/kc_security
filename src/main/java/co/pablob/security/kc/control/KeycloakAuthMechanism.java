@@ -9,7 +9,9 @@ import org.keycloak.adapters.spi.HttpFacade;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -55,7 +57,7 @@ public class KeycloakAuthMechanism implements HttpAuthenticationMechanism {
             final AuthOutcome authResult = authenticator.authenticate(facade);
 
             if (AuthOutcome.AUTHENTICATED == authResult) {
-                return authenticationStatus(authenticator.getToken(), httpMessageContext);
+                return authenticationStatus(deployment.getResourceName(), authenticator.getToken(), httpMessageContext);
             }
 
             return httpMessageContext.responseUnauthorized();
@@ -64,8 +66,14 @@ public class KeycloakAuthMechanism implements HttpAuthenticationMechanism {
         return httpMessageContext.notifyContainerAboutLogin(new JwtPrincipal(ANONYMOUS), new HashSet<>());
     }
 
-    private AuthenticationStatus authenticationStatus(AccessToken token, HttpMessageContext httpMessageContext) {
+    private AuthenticationStatus authenticationStatus(String resourceName, AccessToken token, HttpMessageContext httpMessageContext) {
         final Set<String> roles = token.getRealmAccess().getRoles();
+
+        Set<String> resourceRoles = Optional.ofNullable(token.getResourceAccess(resourceName))
+                .map(AccessToken.Access::getRoles)
+                .orElse(Collections.emptySet());
+        roles.addAll(resourceRoles);
+
         final JwtPrincipal principal = JwtPrincipal.Builder(token.getSubject())
                 .setEmail(token.getEmail())
                 .setFamilyName(token.getFamilyName())

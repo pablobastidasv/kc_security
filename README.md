@@ -45,7 +45,7 @@ should be the full path to `keycloak` file location.
 security.kc.file-path=/opt/keycloak.json
 ``` 
 
-## With `keycloak.json` file in default location
+#### With `keycloak.json` file in default location
 
 `keycloak.json` file could be also created in resource folder inside war file to be used as configuration in 
 case `security.kc.file-path` is not specified.
