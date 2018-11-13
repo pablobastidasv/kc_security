@@ -24,7 +24,7 @@ Add the dependency in your pom as below.
 <dependency>
     <groupId>com.github.pablobastidasv</groupId>
     <artifactId>kc_security</artifactId>
-    <version>1.2</version>
+    <version>1.2.1</version>
 </dependency>
 ```
 
