@@ -15,29 +15,29 @@ import java.util.Objects;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import static org.eclipse.microprofile.config.inject.ConfigProperty.UNCONFIGURED_VALUE;
-
 @SuppressWarnings("CdiInjectionPointsInspection")
 public class AdapterConfigProducer {
 
     private static final String FILE_PATH_PROPERTY = "security.kc.file-path";
     private static final String DEFAULT_CONFIG_LOCATION = "/keycloak.json";
 
+    static final String UNCONFIGURED_VALUE = "NA";
+
     private static final String ERROR_CONFIG_FILE_NOT_EXISTS = "Configuration file '%s' does not exist.";
     private static final String ERROR_KEYCLOAK_NOT_CONFIGURED = "Any Keycloak configuration provided, please check " +
             "https://goo.gl/oKpiiU for more information.";
 
     @Inject
-    @ConfigProperty(name = FILE_PATH_PROPERTY)
+    @ConfigProperty(name = FILE_PATH_PROPERTY, defaultValue = UNCONFIGURED_VALUE)
     String filePath;
     @Inject
-    @ConfigProperty(name = "security.kc.realm")
+    @ConfigProperty(name = "security.kc.realm", defaultValue = UNCONFIGURED_VALUE)
     String realm;
     @Inject
-    @ConfigProperty(name = "security.kc.authServerUrl")
+    @ConfigProperty(name = "security.kc.authServerUrl", defaultValue = UNCONFIGURED_VALUE)
     String authServerUrl;
     @Inject
-    @ConfigProperty(name = "security.kc.clientId")
+    @ConfigProperty(name = "security.kc.clientId", defaultValue = UNCONFIGURED_VALUE)
     String clientId;
 
     @Produces
