@@ -9,7 +9,23 @@ This project is a library to add security to servlets and JaxRS endpoints using 
 
 ### Dependency
 
-Add the dependency in your pom as below.
+#### Maven central
+
+Add below dependency to your pom.
+
+```xml
+<dependency>
+    <groupId>io.github.pablobastidasv</groupId>
+    <artifactId>kc</artifactId>
+    <version>{version}</version>
+</dependency>
+```
+
+#### Jitpack
+
+To older versions use jitpack. Add the dependency in your pom as below.
+
+**NOTE**: Latest version published on Jetpack.io is 1.2.1
 
 ```xml
 <repositories>
@@ -24,7 +40,7 @@ Add the dependency in your pom as below.
 <dependency>
     <groupId>com.github.pablobastidasv</groupId>
     <artifactId>kc_security</artifactId>
-    <version>1.2</version>
+    <version>{verion}</version>
 </dependency>
 ```
 
@@ -71,3 +87,4 @@ configuration.
 This library has been tested in:
 
  - [Payara 5](http://www.payara.org/)
+ - [Openliberty 18.0.0.3](https://openliberty.io)

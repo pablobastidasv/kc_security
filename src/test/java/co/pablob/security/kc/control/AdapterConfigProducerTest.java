@@ -6,7 +6,7 @@ import org.keycloak.representations.adapters.config.AdapterConfig;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.eclipse.microprofile.config.inject.ConfigProperty.UNCONFIGURED_VALUE;
+import static co.pablob.security.kc.control.AdapterConfigProducer.UNCONFIGURED_VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
