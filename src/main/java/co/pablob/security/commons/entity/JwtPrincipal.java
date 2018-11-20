@@ -3,8 +3,12 @@ package co.pablob.security.commons.entity;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.enterprise.inject.Alternative;
 import javax.security.enterprise.CallerPrincipal;
 
+import static co.pablob.security.kc.control.KeycloakAuthMechanism.ANONYMOUS;
+
+@Alternative
 public class JwtPrincipal extends CallerPrincipal implements Serializable {
 
     private String userName;
@@ -13,8 +17,13 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
     private String familyName;
     private String email;
     private String picture;
+    private String token;
 
     private Map<String, Object> claims;
+
+    public JwtPrincipal() {
+        super(ANONYMOUS);
+    }
 
     public JwtPrincipal(String name) {
         super(name);
@@ -42,6 +51,14 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
 
     public String getPicture() {
         return picture;
+    }
+
+    public Map<String, Object> getClaims() {
+        return claims;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     public static JwtPrincipalBuilder Builder(String name) {
@@ -86,12 +103,17 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
             return this;
         }
 
-        public JwtPrincipalBuilder setClaims(Map<String, Object> claims){
+        public JwtPrincipalBuilder setClaims(Map<String, Object> claims) {
             principal.claims = claims;
             return this;
         }
 
-        public JwtPrincipal build(){
+        public JwtPrincipalBuilder withToken(String token){
+            principal.token = token;
+            return this;
+        }
+
+        public JwtPrincipal build() {
             return principal;
         }
     }

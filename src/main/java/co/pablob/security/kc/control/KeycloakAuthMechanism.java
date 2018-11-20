@@ -1,5 +1,6 @@
 package co.pablob.security.kc.control;
 
+import co.pablob.security.commons.entity.JwtPrincipal;
 import org.keycloak.adapters.BearerTokenRequestAuthenticator;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
@@ -8,11 +9,6 @@ import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.spi.HttpFacade;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.adapters.config.AdapterConfig;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -23,15 +19,17 @@ import javax.security.enterprise.authentication.mechanism.http.HttpMessageContex
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import co.pablob.security.commons.entity.JwtPrincipal;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @ApplicationScoped
 public class KeycloakAuthMechanism implements HttpAuthenticationMechanism {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER = "Bearer ";
-    private static final String ANONYMOUS = "Anonymous";
+    public static final String ANONYMOUS = "Anonymous";
 
     private KeycloakDeployment deployment;
 
@@ -57,16 +55,17 @@ public class KeycloakAuthMechanism implements HttpAuthenticationMechanism {
             final AuthOutcome authResult = authenticator.authenticate(facade);
 
             if (AuthOutcome.AUTHENTICATED == authResult) {
-                return authenticationStatus(deployment.getResourceName(), authenticator.getToken(), httpMessageContext);
+                return authenticationStatus(deployment.getResourceName(), authenticator, httpMessageContext);
             }
 
             return httpMessageContext.responseUnauthorized();
         }
 
-        return httpMessageContext.notifyContainerAboutLogin(new JwtPrincipal(ANONYMOUS), new HashSet<>());
+        return httpMessageContext.notifyContainerAboutLogin(new JwtPrincipal(), new HashSet<>());
     }
 
-    private AuthenticationStatus authenticationStatus(String resourceName, AccessToken token, HttpMessageContext httpMessageContext) {
+    private AuthenticationStatus authenticationStatus(String resourceName, BearerTokenRequestAuthenticator authenticator, HttpMessageContext httpMessageContext) {
+        final AccessToken token = authenticator.getToken();
         final Set<String> roles = token.getRealmAccess().getRoles();
 
         Set<String> resourceRoles = Optional.ofNullable(token.getResourceAccess(resourceName))
@@ -81,6 +80,8 @@ public class KeycloakAuthMechanism implements HttpAuthenticationMechanism {
                 .setGivenName(token.getGivenName())
                 .setUserName(token.getPreferredUsername())
                 .setPicture(token.getPicture())
+                .setClaims(token.getOtherClaims())
+                .withToken(authenticator.getTokenString())
                 .build();
 
         CredentialValidationResult credentials = new CredentialValidationResult(principal, roles);

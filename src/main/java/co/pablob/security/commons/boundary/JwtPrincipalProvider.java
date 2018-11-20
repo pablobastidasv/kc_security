@@ -1,20 +1,22 @@
 package co.pablob.security.commons.boundary;
 
-import javax.enterprise.context.ApplicationScoped;
+import co.pablob.security.commons.entity.JwtPrincipal;
+
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.security.enterprise.SecurityContext;
 
-import co.pablob.security.commons.entity.JwtPrincipal;
-
-@ApplicationScoped
 public class JwtPrincipalProvider {
 
     @Inject
-    @SuppressWarnings("CdiInjectionPointsInspection")
     private SecurityContext securityContext;
 
+    @Produces
+    @RequestScoped
     public JwtPrincipal produceJwtPrincipal(){
-        return (JwtPrincipal) securityContext.getCallerPrincipal();
+        return securityContext.getPrincipalsByType(JwtPrincipal.class)
+                .toArray(new JwtPrincipal[0])[0];
     }
 
 }
