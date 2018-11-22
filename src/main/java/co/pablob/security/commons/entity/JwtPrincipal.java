@@ -11,14 +11,38 @@ import static co.pablob.security.kc.control.KeycloakAuthMechanism.ANONYMOUS;
 @Alternative
 public class JwtPrincipal extends CallerPrincipal implements Serializable {
 
+    /**
+     * JWT token value of: preferred_username
+     */
     private String userName;
+    /**
+     * JWT token value of: name
+     */
     private String fullName;
+    /**
+     * JWT token value of: given_name
+     */
     private String givenName;
+    /**
+     * JWT token value of: family_name
+     */
     private String familyName;
+    /**
+     * JWT token value of: email
+     */
     private String email;
+    /**
+     * JWT token value of: picture
+     */
     private String picture;
+    /**
+     * The JWT token
+     */
     private String token;
 
+    /**
+     * Map of any other claims and data that might be in the IDToken. Could be custom claims set up by the auth server
+     */
     private Map<String, Object> claims;
 
     public JwtPrincipal() {

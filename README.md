@@ -82,6 +82,39 @@ security.kc.clientId=my-client-id
 **NOTE**: As this project use [MP-Config](http://microprofile.io/project/eclipse/microprofile-config) to set the Keycloak 
 configuration.
 
+## JwtPrincipal
+
+As a `Principal`, is provided an extension with `JwtPrincipal` which can be injected in your beans via CDI.
+
+```java
+@Inject
+private JwtPrincipal principal;
+```
+
+The `JwtPrincipal` provides util information about the logged user. Bellow this class' attributes: 
+
+```java
+String userName;
+String fullName;
+String givenName;
+String familyName;
+String email;
+String picture;
+String token;
+Map<String, Object> claims;
+```
+
+|    Key    | Description |
+|:---------:|-------------|
+|userName   | Keycloak JWT value of: preferred_username
+|fullName   | Keycloak JWT value of: name
+|givenName  | Keycloak JWT value of: given_name
+|familyName | Keycloak JWT value of: family_name
+|email      | Keycloak JWT value of: email
+|picture    | Keycloak JWT value of: picture
+|token      | The JWT token
+|claims     | Map of any other claims and data that might be in the IDToken. Could be custom claims set up by the auth server
+
 ## Tested platforms
 
 This library has been tested in:
