@@ -66,7 +66,9 @@ public class KeycloakAuthMechanism implements HttpAuthenticationMechanism {
 
     private AuthenticationStatus authenticationStatus(String resourceName, BearerTokenRequestAuthenticator authenticator, HttpMessageContext httpMessageContext) {
         final AccessToken token = authenticator.getToken();
-        final Set<String> roles = token.getRealmAccess().getRoles();
+        final Set<String> roles = Optional.ofNullable(token.getRealmAccess())
+                .map(AccessToken.Access::getRoles)
+                .orElse(new HashSet<>());
 
         Set<String> resourceRoles = Optional.ofNullable(token.getResourceAccess(resourceName))
                 .map(AccessToken.Access::getRoles)

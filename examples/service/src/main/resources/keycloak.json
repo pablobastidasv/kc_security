@@ -1,0 +1,9 @@
+{
+  "realm": "master",
+  "bearer-only": true,
+  "auth-server-url": "http://localhost:8181/auth",
+  "ssl-required": "external",
+  "resource": "master-realm",
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}
