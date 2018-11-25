@@ -11,7 +11,7 @@
     <url>https://github.com/pablobastidasv/kc_security</url>
 
     <groupId>io.github.pablobastidasv</groupId>
-    <artifactId>kc</artifactId>
+    <artifactId>kc_security</artifactId>
     <version>1.4</version>
 
     <properties>
