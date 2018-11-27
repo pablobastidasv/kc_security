@@ -3,18 +3,51 @@ package co.pablob.security.commons.entity;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.enterprise.inject.Alternative;
 import javax.security.enterprise.CallerPrincipal;
 
+import static co.pablob.security.kc.control.KeycloakAuthMechanism.ANONYMOUS;
+
+@Alternative
 public class JwtPrincipal extends CallerPrincipal implements Serializable {
 
+    /**
+     * JWT token value of: preferred_username
+     */
     private String userName;
+    /**
+     * JWT token value of: name
+     */
     private String fullName;
+    /**
+     * JWT token value of: given_name
+     */
     private String givenName;
+    /**
+     * JWT token value of: family_name
+     */
     private String familyName;
+    /**
+     * JWT token value of: email
+     */
     private String email;
+    /**
+     * JWT token value of: picture
+     */
     private String picture;
+    /**
+     * The JWT token
+     */
+    private String token;
 
+    /**
+     * Map of any other claims and data that might be in the IDToken. Could be custom claims set up by the auth server
+     */
     private Map<String, Object> claims;
+
+    public JwtPrincipal() {
+        super(ANONYMOUS);
+    }
 
     public JwtPrincipal(String name) {
         super(name);
@@ -42,6 +75,14 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
 
     public String getPicture() {
         return picture;
+    }
+
+    public Map<String, Object> getClaims() {
+        return claims;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     public static JwtPrincipalBuilder Builder(String name) {
@@ -86,12 +127,17 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
             return this;
         }
 
-        public JwtPrincipalBuilder setClaims(Map<String, Object> claims){
+        public JwtPrincipalBuilder setClaims(Map<String, Object> claims) {
             principal.claims = claims;
             return this;
         }
 
-        public JwtPrincipal build(){
+        public JwtPrincipalBuilder withToken(String token){
+            principal.token = token;
+            return this;
+        }
+
+        public JwtPrincipal build() {
             return principal;
         }
     }
