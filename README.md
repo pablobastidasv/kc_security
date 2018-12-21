@@ -17,7 +17,7 @@ Add below dependency to your pom.
 ```xml
 <dependency>
     <groupId>io.github.pablobastidasv</groupId>
-    <artifactId>kc</artifactId>
+    <artifactId>kc_security</artifactId>
     <version>{version}</version>
 </dependency>
 ```
