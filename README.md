@@ -1,4 +1,5 @@
 [![](https://jitpack.io/v/pablobastidasv/kc_security.svg)](https://jitpack.io/#pablobastidasv/kc_security)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.pablobastidasv/kc_security.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.pablobastidasv%22%20AND%20a:%22kc_security%22)
 
 # Keycloak security with Soteria (JEE 8)
 
