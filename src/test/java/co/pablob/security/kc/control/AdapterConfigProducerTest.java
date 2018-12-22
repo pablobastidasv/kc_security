@@ -1,20 +1,31 @@
 package co.pablob.security.kc.control;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static co.pablob.security.kc.control.AdapterConfigProducer.UNCONFIGURED_VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 public class AdapterConfigProducerTest {
 
     private static final String EXPECTED_SERVICE_URL = "http://auth_service/auth";
     private static final String EXPECTED_CLIENT_ID = "services";
     private static final String EXPECTED_REALM = "dev";
+
+    private HttpServletRequest request;
+
+    @Before
+    public void setUp() throws Exception {
+        request = mock(HttpServletRequest.class);
+    }
 
     @Test
     public void whenConfigurationIsDirect_shouldGenerateCorrectAdapter() throws Exception {
@@ -27,7 +38,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = EXPECTED_REALM;
 
         // when
-        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig();
+        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(request);
 
         // then
         assertEquals(EXPECTED_SERVICE_URL, adapterConfig.getAuthServerUrl());
@@ -48,7 +59,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = UNCONFIGURED_VALUE;
 
         // when
-        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig();
+        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(request);
 
         // then
         assertEquals(EXPECTED_SERVICE_URL, adapterConfig.getAuthServerUrl());
@@ -67,7 +78,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = UNCONFIGURED_VALUE;
 
         // when
-        adapterConfigProducer.produceAdapterConfig();
+        adapterConfigProducer.produceAdapterConfig(request);
         fail("Exception should be throws");
     }
 
@@ -82,7 +93,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = UNCONFIGURED_VALUE;
 
         // when
-        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig();
+        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(request);
 
         // then
         assertEquals(EXPECTED_SERVICE_URL, adapterConfig.getAuthServerUrl());

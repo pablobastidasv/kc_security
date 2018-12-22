@@ -39,6 +39,10 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
      * The JWT token
      */
     private String token;
+    /**
+     * The realm where the user was validated.
+     */
+    private String realm;
 
     /**
      * Map of any other claims and data that might be in the IDToken. Could be custom claims set up by the auth server
@@ -83,6 +87,10 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
 
     public String getToken() {
         return token;
+    }
+
+    public String getRealm() {
+        return realm;
     }
 
     public static JwtPrincipalBuilder Builder(String name) {
@@ -134,6 +142,11 @@ public class JwtPrincipal extends CallerPrincipal implements Serializable {
 
         public JwtPrincipalBuilder withToken(String token){
             principal.token = token;
+            return this;
+        }
+
+        public JwtPrincipalBuilder withRealm(String realm){
+            principal.realm = realm;
             return this;
         }
 

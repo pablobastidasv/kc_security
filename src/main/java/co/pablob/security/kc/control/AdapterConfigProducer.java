@@ -12,8 +12,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("CdiInjectionPointsInspection")
 public class AdapterConfigProducer {
@@ -28,6 +29,9 @@ public class AdapterConfigProducer {
             "https://goo.gl/oKpiiU for more information.";
 
     @Inject
+    private Instance<MultiTenantProducer> multiTenantProducer;
+
+    @Inject
     @ConfigProperty(name = FILE_PATH_PROPERTY, defaultValue = UNCONFIGURED_VALUE)
     String filePath;
     @Inject
@@ -39,10 +43,16 @@ public class AdapterConfigProducer {
     @Inject
     @ConfigProperty(name = "security.kc.clientId", defaultValue = UNCONFIGURED_VALUE)
     String clientId;
+    @Inject
+    @ConfigProperty(name = "security.kc.multiTenant.enabled", defaultValue = "false")
+    boolean multiTenant;
 
-    @Produces
-    public AdapterConfig produceAdapterConfig() throws IOException, URISyntaxException {
-        if(!UNCONFIGURED_VALUE.equals(filePath)) {
+    public AdapterConfig produceAdapterConfig(HttpServletRequest request) throws IOException, URISyntaxException {
+        if(multiTenant && !(multiTenantProducer.isAmbiguous() || multiTenantProducer.isUnsatisfied())) {
+            // When configuration must be provided by request because of multi-tenant support.
+            InputStream is = multiTenantProducer.get().adapterConfigFromRequest(request);
+            return KeycloakDeploymentBuilder.loadAdapterConfig(is);
+        } else if(!UNCONFIGURED_VALUE.equals(filePath)) {
             // When filepath is defined
             return adapterConfigFromFile();
         } else if(Objects.nonNull(getClass().getResource(DEFAULT_CONFIG_LOCATION))) {
