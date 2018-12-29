@@ -1,4 +1,5 @@
 [![](https://jitpack.io/v/pablobastidasv/kc_security.svg)](https://jitpack.io/#pablobastidasv/kc_security)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.pablobastidasv/kc_security.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.pablobastidasv%22%20AND%20a:%22kc_security%22)
 
 # Keycloak security with Soteria (JEE 8)
 
@@ -82,7 +83,7 @@ security.kc.clientId=my-client-id
 **NOTE**: As this project use [MP-Config](http://microprofile.io/project/eclipse/microprofile-config) to set the Keycloak 
 configuration.
 
-## JwtPrincipal
+## JwtPrincipal
 
 As a `Principal`, is provided an extension with `JwtPrincipal` which can be injected in your beans via CDI.
 
@@ -101,6 +102,7 @@ String familyName;
 String email;
 String picture;
 String token;
+String realm;
 Map<String, Object> claims;
 ```
 
@@ -113,7 +115,49 @@ Map<String, Object> claims;
 |email      | Keycloak JWT value of: email
 |picture    | Keycloak JWT value of: picture
 |token      | The JWT token
+|realm      | The realm where authentication was performed
 |claims     | Map of any other claims and data that might be in the IDToken. Could be custom claims set up by the auth server
+
+## Multi-tenant support
+
+Since version `2.x.x` the library provide an alternative to handle multi-tenant
+environments.
+
+To enable the multi-tenant capabilities must be perform the 2 steps
+described below:
+
+  1. Define environment variable `SECURITY_KC_MULTITENANT_ENABLED` to true.
+  2. Implement interface `co.pablob.security.kc.control.MultiTenantProducer`.
+
+NOTE: The property also can be set as `security.kc.multiTenant.enabled`.
+
+### The `MultiTenantProducer` interface
+
+This interface requires the user to implement the method
+`adapterConfigFromRequest`, this method receives an `HttpServletRequest`
+parameter which can be used to determine the what URL the client reach
+and define what tenant information must be loaded.
+
+Additionally, this method must return and `InputStream` created based on
+the information that the `keycloak.json` file contains.
+
+Below an example about how to implement this interface.
+
+```java
+public class MultiTenantAdapterConfigProducer implements MultiTenantProducer {
+
+    @Override
+    public InputStream adapterConfigFromRequest(HttpServletRequest httpServletRequest) {
+        String server = httpServletRequest.getServerName();
+        byte[] keycloakConfig = Optional.ofNullable(getKeycloakJsonString(server))
+                .map(String::getBytes)
+                .orElseGet(this::defaultConfig);
+        return new ByteArrayInputStream(keycloakConfig);
+    }
+}
+```
+
+
 
 ## Tested platforms
 
