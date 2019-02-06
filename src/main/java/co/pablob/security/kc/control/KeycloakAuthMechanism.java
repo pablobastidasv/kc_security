@@ -16,8 +16,6 @@ import javax.security.enterprise.authentication.mechanism.http.HttpMessageContex
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -39,27 +37,23 @@ public class KeycloakAuthMechanism implements HttpAuthenticationMechanism {
             HttpServletResponse response,
             HttpMessageContext httpMessageContext) {
 
-        try {
-            final String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-            if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
-                KeycloakDeployment deployment = deploymentProducer.getDeployment(request);
-                BearerTokenRequestAuthenticator authenticator = new BearerTokenRequestAuthenticator(deployment);
-                HttpFacade facade = new ServletHttpFacade(request, response);
+        final String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+            KeycloakDeployment deployment = deploymentProducer.getDeployment(request);
+            BearerTokenRequestAuthenticator authenticator = new BearerTokenRequestAuthenticator(deployment);
+            HttpFacade facade = new ServletHttpFacade(request, response);
 
-                final AuthOutcome authResult = authenticator.authenticate(facade);
+            final AuthOutcome authResult = authenticator.authenticate(facade);
 
-                if (AuthOutcome.AUTHENTICATED == authResult) {
-                    return authenticationStatus(deployment.getResourceName(), authenticator,
-                            deployment, httpMessageContext);
-                }
-
-                return httpMessageContext.responseUnauthorized();
+            if (AuthOutcome.AUTHENTICATED == authResult) {
+                return authenticationStatus(deployment.getResourceName(), authenticator,
+                        deployment, httpMessageContext);
             }
 
-            return httpMessageContext.notifyContainerAboutLogin(new JwtPrincipal(), new HashSet<>());
-        } catch (IOException | URISyntaxException e) {
             return httpMessageContext.responseUnauthorized();
         }
+
+        return httpMessageContext.notifyContainerAboutLogin(new JwtPrincipal(), new HashSet<>());
     }
 
     private AuthenticationStatus authenticationStatus(

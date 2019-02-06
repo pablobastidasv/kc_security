@@ -1,0 +1,62 @@
+@startuml
+
+title Detailed - Sequence Diagram
+
+participant Server as s
+box "Keycloak library"
+    participant KeycloakAuthMechanism as kam
+    participant DeploymentProducer as dp
+    participant AdapterConfigProducer as acp
+end box
+box "Custom implementation"
+participant MultiTenantProducer as mtp
+end box
+
+s -> kam: validateRequest()
+activate kam
+kam -> dp: getDeployment()
+activate dp
+dp -> acp: obtainRealmNameKey(Request)
+activate acp
+alt when multi-tenant is enabled
+    acp -> mtp: obtainRealmNameKey(HttpServletRequest)
+    activate mtp
+    acp <- mtp
+    deactivate mtp
+else
+    acp -> acp:
+    note right: return default value "default"
+    activate acp
+    deactivate acp
+end alt
+dp <- acp
+deactivate acp
+alt deployment does not exist in map (cache)
+    dp -> acp: produceAdapterConfig(realmKey:String)
+    activate acp
+    alt when multi-tenant is enabled
+        acp -> mtp: adapterConfigFromRequest(realmKey:String)
+        activate mtp
+        acp <- mtp
+        deactivate mtp
+    else
+        acp -> acp
+        note right: Build based on configuration.
+        activate acp
+        deactivate acp
+    end alt
+    dp <- acp
+    deactivate acp
+    dp -> dp: Store deployment in map (cache)
+    activate dp
+    deactivate dp
+end alt
+kam <- dp: deployment from cache
+deactivate dp
+kam -> kam: validate user
+activate kam
+deactivate kam
+s <- kam
+deactivate kam
+
+@enduml

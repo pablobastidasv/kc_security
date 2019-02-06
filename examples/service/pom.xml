@@ -23,8 +23,8 @@
 
         <dependency>
             <groupId>io.github.pablobastidasv</groupId>
-            <artifactId>kc</artifactId>
-            <version>1.4</version>
+            <artifactId>kc_security</artifactId>
+            <version>2.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -35,7 +35,7 @@
             <plugin>
                 <groupId>fish.payara.maven.plugins</groupId>
                 <artifactId>payara-micro-maven-plugin</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3</version>
                 <configuration>
                     <deployWar>true</deployWar>
                 </configuration>
