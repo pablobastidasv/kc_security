@@ -26,7 +26,7 @@ Add below dependency to your pom.
 
 To older versions use jitpack. Add the dependency in your pom as below.
 
-**NOTE**: Latest version published on Jetpack.io is 1.2.1
+**NOTE**: Last version published on Jetpack.io is 1.2.1
 
 ```xml
 <repositories>
@@ -41,7 +41,7 @@ To older versions use jitpack. Add the dependency in your pom as below.
 <dependency>
     <groupId>com.github.pablobastidasv</groupId>
     <artifactId>kc_security</artifactId>
-    <version>{verion}</version>
+    <version>{version}</version>
 </dependency>
 ```
 
@@ -134,9 +134,8 @@ NOTE: The property also can be set as `security.kc.multiTenant.enabled`.
 ### The `MultiTenantProducer` interface
 
 This interface requires the user to implement the method
-`adapterConfigFromRequest`, this method receives an `HttpServletRequest`
-parameter which can be used to determine the what URL the client reach
-and define what tenant information must be loaded.
+`adapterConfigFromRequest`, this method receives an `String`
+parameter which is the realm Key and thi will identify what tenant information must be loaded.
 
 Additionally, this method must return and `InputStream` created based on
 the information that the `keycloak.json` file contains.
@@ -147,9 +146,8 @@ Below an example about how to implement this interface.
 public class MultiTenantAdapterConfigProducer implements MultiTenantProducer {
 
     @Override
-    public InputStream adapterConfigFromRequest(HttpServletRequest httpServletRequest) {
-        String server = httpServletRequest.getServerName();
-        byte[] keycloakConfig = Optional.ofNullable(getKeycloakJsonString(server))
+    public InputStream adapterConfigFromRequest(String realmKey) {
+        byte[] keycloakConfig = Optional.ofNullable(getKeycloakJsonString(realmKey))
                 .map(String::getBytes)
                 .orElseGet(this::defaultConfig);
         return new ByteArrayInputStream(keycloakConfig);
@@ -157,7 +155,9 @@ public class MultiTenantAdapterConfigProducer implements MultiTenantProducer {
 }
 ```
 
-
+NOTE: By default the value of `realmKey` is the server name returned by `HttpServletRequest::getServerName`,
+if this value is not enough for you, you can always overwrite the method 
+`String obtainRealmNameKey(HttpServletRequest request)` and define the key string that fits better to you.
 
 ## Tested platforms
 

@@ -4,8 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -20,11 +18,10 @@ public class AdapterConfigProducerTest {
     private static final String EXPECTED_CLIENT_ID = "services";
     private static final String EXPECTED_REALM = "dev";
 
-    private HttpServletRequest request;
+    private String realmNameKey = "default";
 
     @Before
     public void setUp() throws Exception {
-        request = mock(HttpServletRequest.class);
     }
 
     @Test
@@ -38,7 +35,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = EXPECTED_REALM;
 
         // when
-        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(request);
+        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(realmNameKey);
 
         // then
         assertEquals(EXPECTED_SERVICE_URL, adapterConfig.getAuthServerUrl());
@@ -59,7 +56,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = UNCONFIGURED_VALUE;
 
         // when
-        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(request);
+        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(realmNameKey);
 
         // then
         assertEquals(EXPECTED_SERVICE_URL, adapterConfig.getAuthServerUrl());
@@ -78,7 +75,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = UNCONFIGURED_VALUE;
 
         // when
-        adapterConfigProducer.produceAdapterConfig(request);
+        adapterConfigProducer.produceAdapterConfig(realmNameKey);
         fail("Exception should be throws");
     }
 
@@ -93,7 +90,7 @@ public class AdapterConfigProducerTest {
         adapterConfigProducer.realm = UNCONFIGURED_VALUE;
 
         // when
-        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(request);
+        final AdapterConfig adapterConfig = adapterConfigProducer.produceAdapterConfig(realmNameKey);
 
         // then
         assertEquals(EXPECTED_SERVICE_URL, adapterConfig.getAuthServerUrl());

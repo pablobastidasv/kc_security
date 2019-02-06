@@ -4,6 +4,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -11,10 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("CdiInjectionPointsInspection")
 public class AdapterConfigProducer {
@@ -47,10 +46,12 @@ public class AdapterConfigProducer {
     @ConfigProperty(name = "security.kc.multiTenant.enabled", defaultValue = "false")
     boolean multiTenant;
 
-    public AdapterConfig produceAdapterConfig(HttpServletRequest request) throws IOException, URISyntaxException {
-        if(multiTenant && !(multiTenantProducer.isAmbiguous() || multiTenantProducer.isUnsatisfied())) {
+    private final String DEFAULT_REALM = "default";
+
+    public AdapterConfig produceAdapterConfig(String realmKeyName) throws IOException, URISyntaxException {
+        if(this.isMultitenant()) {
             // When configuration must be provided by request because of multi-tenant support.
-            InputStream is = multiTenantProducer.get().adapterConfigFromRequest(request);
+            InputStream is = multiTenantProducer.get().adapterConfigFromRequest(realmKeyName);
             return KeycloakDeploymentBuilder.loadAdapterConfig(is);
         } else if(!UNCONFIGURED_VALUE.equals(filePath)) {
             // When filepath is defined
@@ -106,4 +107,14 @@ public class AdapterConfigProducer {
         return adapterConfig;
     }
 
+    private boolean isMultitenant(){
+        return multiTenant && !(multiTenantProducer.isAmbiguous() || multiTenantProducer.isUnsatisfied());
+    }
+
+    public String obtainRealmNameKey(HttpServletRequest request) {
+        if(isMultitenant()){
+            return multiTenantProducer.get().obtainRealmNameKey(request);
+        }
+        return DEFAULT_REALM;
+    }
 }
