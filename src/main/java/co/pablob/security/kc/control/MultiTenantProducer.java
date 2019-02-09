@@ -13,8 +13,8 @@ public interface MultiTenantProducer {
      * @return An input stream with the Realm information, normally a json file provided by Keycloak
      * @throws IOException In case the {@code InputStream} generation present some IO error.
      * @deprecated due to performance issues, now this method will be not used, this will make a passthrough
-     *      to {@link MultiTenantProducer::obtainRealmNameKey} which receives a {@code String} passing value
-     *      from {@link HttpServletRequest::getServerName}.
+     * to {@link MultiTenantProducer#adapterConfigFromRequest(String)} with the value returned
+     * by {@link HttpServletRequest#getServerName()}.
      */
     @Deprecated
     default InputStream adapterConfigFromRequest(HttpServletRequest request) throws IOException {
